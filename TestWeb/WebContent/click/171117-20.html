@@ -1,0 +1,389 @@
+<!-- 입력되는 값 부분을 좌표로 변환 -->
+<!-- 마우스를 클릭한 정보를 저장해서 여러번 삽입. -->
+<!-- 3.ctrl 키를 클릭하는 횟수에 따라 특정 테이블에 좌표를 삽입한다. -->
+<!-- 4.클릭한 횟수에 따라 좌표에 오브젝트를 생성 오브젝트마다  새로운 DIV를 부여하고 create 해야함. -->
+<!-- 포인트를 삭제하기 위해서 포인트의 UUID를 만들어야 하고 추가 및 삭제 버튼을 클릭했을때 포인트DIV를 조회 검색해서 삭제해야 한다.  -->
+<!-- 6.jQuery를 활용한 크기조절 및 드래그 테스트 -->
+<!-- 7.포인트 아이디 생성 테스트 -->
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8">
+      <title>arhci-web 에디트 모드</title>
+      <!-- 문서정보 -->
+      <!-- <META http-equiv="content-type" content="text/html charset=utf-8"> -->
+
+      <!-- jquery크기조절 -->
+      <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/themes/redmond/jquery-ui.css">
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/i18n/jquery-ui-i18n.min.js"></script>
+      <script src="js/sample.js"></script>
+      <script>
+        function Init()
+        {
+          //클릭된 위치에 이미지파일 동적으로 생성해서 표시하기
+          document.onmousedown = function ()
+            {
+            //이미지 버튼이 왼쪽버튼일때만 실행
+            // - event.button 값은 onmousedown/up일때만 정상적인 값을 반환한다
+            // - click에 event.button 값은 무조건 0이다
+            if (event.button != "0") return;
+
+            //1. 클릭된 좌표값
+            var x = event.x;
+            var y = event.y;
+
+            //2. 이미지 태그 생성 <img src="" />
+            var img = document.createElement("img");
+            img.setAttribute("src", "./images/cctv.jpg");
+            img.setAttribute("alt", "카메라 이미지");
+
+            //2.5 이미지 태그의 좌표를 지정
+            img.style.position = "absolute";
+            img.style.left = (x) + "px";
+            img.style.top = (y) + "px";
+
+            //3. <body>의 자식으로 이미지 추가
+            document.body.appendChild(img);
+
+            //4. 이미지 태그에 이벤트 추가
+            // - 마우스 가운데 버튼 클릭 : zIndex를 증가시켜 위로 올라오게 한다
+            // - 마우스 오른쪽 버튼 클릭 :
+            img.onmousedown = function ()
+            {
+              if (event.button == "2")
+              {
+              //이미지를 위로
+              event.srcElement.style.zIndex = index;
+              index++;
+              }
+              else if (event.button == "1")
+              {
+              //이미지삭제
+              document.body.removeChild(event.srcElement);
+              }
+            }
+        }
+      }
+      var index = 1;
+        </script>
+
+
+        <style>
+        /*배경설정*/
+            body{
+                background-color: black;
+                color:white;
+            }
+
+        /*마우스 이벤트를 받을 타깃 설정*/
+            #target{
+              background-image:url(옥외_9F.jpg);
+              background-size:1500px;
+              background-repeat:no-repeat;
+              background-position:left top;
+              /*도면 이미지는 타겟에 맞게 설정*/
+              /*background-attachment:fixed;*/
+                width:1500px;
+                height:700px;
+                background-color: green;
+                margin:10px;
+            }
+
+          /*마우스 이벤트를 표시할 테이블 정보*/
+            table{
+                border-collapse: collapse;
+                margin:10px;
+                float: left;
+                width:400px;
+            }
+            td, th{
+                padding:10px;
+                border:1px solid gray;
+            }
+
+              /*테스트용 포인트 */
+            .pile1{position:absolute; left:1500px; top:200px; width:200px; height:50px; background-color:red; color:white}
+            .pile2{position:absolute; left:1500px; top:300px; width:200px; height:50px; background-color:pink; color:white}
+            .pile3{position:absolute; left:1500px; top:400px; width:200px; height:50px; background-color:yellow; color:black}
+            .pile4{position:absolute; left:1500px; top:500px; width:200px; height:50px; background-color:lightgreen}
+            .pre_set_class{position:absolute; left:700px; top:600px; width:100px; height:20px; background-color:lightgreen}
+        </style>
+
+
+    </head>
+    <body onload="Init()">
+      <!-- 마우스 이벤트가 발생하는 배경 타깃  -->
+      <!-- 차후 배경 이미지로 교체 -->
+        <div id="target">
+        </div>
+      <!--  -->
+
+        <!-- 포인트로 사용할 테스트 포인트 -->
+      <div id="point1" class="pile1" style="z-index:1">z-index=1</div>
+      <div id="point2" class="pile2" style="z-index:2">z-index=2</div>
+      <div id="point3" class="pile3" style="z-index:3">z-index=3</div>
+      <div id="point4" class="pile4" style="z-index:4">z-index=4</div>
+
+      <!-- 포인트로 만들 모듈 프리셋 -->
+      <div id="pre_set" class="pre_set_class" style="display:none">
+      	<input type="text" id='uuid1' name="" value="" style="width:200px">
+        <input type="button" value="삭제" onclick="remove_item(this)">
+      </div>
+
+      <!-- 포인트가 생성될 부분의 필드 -->
+      <!-- <div id="field"></div> -->
+
+        <table>
+            <tr>
+                <th>event type</th>
+                <th>info</th>
+            </tr>
+            <tr>
+                <td>click</td>
+                <td id="elmclick"></td>
+            </tr>
+            <tr>
+                <td>dblclick</td>
+                <td id="elmdblclick"></td>
+            </tr>
+            <tr>
+                <td>mousedown</td>
+                <td id="elmmousedown"></td>
+            </tr>
+            <tr>
+                <td>mouseup</td>
+                <td id="elmmouseup"></td>
+            </tr>
+            <tr>
+                <td>mousemove</td>
+                <td id="elmmousemove"></td>
+            </tr>
+            <tr>
+                <td>mouseover</td>
+                <td id="elmmouseover"></td>
+            </tr>
+            <tr>
+                <td>mouseout</td>
+                <td id="elmmouseout"></td>
+            </tr>
+            <tr>
+                <td>contextmenu</td>
+                <td id="elmcontextmenu"></td>
+            </tr>
+        </table>
+
+        <!-- 마우스 특수키 관련 정보 표시 테이블 -->
+        <table>
+            <tr>
+                <th>key</th>
+                <th>info</th>
+            </tr>
+            <tr>
+                <td>event.altKey</td>
+                <td id="elmaltkey"></td>
+            </tr>
+            <tr>
+                <td>event.ctrlKey</td>
+                <td id="elmctrlkey"></td>
+            </tr>
+            <tr>
+                <td>event.shiftKey</td>
+                <td id="elmshiftKey"></td>
+            </tr>
+            <tr>
+                <td>포인트 생성 버튼</td>
+                <td>마우스 왼클릭+ctrl</td>
+            </tr>
+            <tr>
+                <td>포인트 생성1번클릭</td>
+                <td id="mousecount1"></td>
+            </tr>
+            <tr>
+                <td>포인트 생성2번클릭</td>
+                <td id="mousecount2"></td>
+            </tr>
+            <tr>
+                <td>포인트 생성3번클릭</td>
+                <td id="mousecount3"></td>
+            </tr>
+
+        </table>
+        <!--  -->
+
+        <!-- 마우스 좌표값 표시 테이블 -->
+        <table>
+            <tr>
+                <th>mouse position</th>
+                <th>info</th>
+            </tr>
+            <tr>
+                <td>event.clientX</td>
+                <td id="elemclientx"></td>
+            </tr>
+            <tr>
+                <td>event.clientY</td>
+                <td id="elemclienty"></td>
+            </tr>
+
+            <tr>
+                <td>point_UUID고유아이디</td>
+                <td id="uuid"></td>
+            </tr>
+        </table>
+        <!--  -->
+        <div id="sample_page">
+        <div id="content">1</div>
+         </div>
+        <script>
+        // 마우스 클릭 횟수를 담을 변수
+        // 차후에는  DB 카운트 마지막 숫자.
+        var count=0;
+
+        // 타깃 태그를 가져와서 변수t에 담고
+        var t = document.getElementById('target');
+
+        // 마우스 이벤트가 발생했을때 버튼별 로직
+        function handler(event){
+          // 어떤 이벤트인지 분류하기 위해 태그정보 분류
+            var info = document.getElementById('elm'+event.type);
+            // 마우스 이벤트를 구분하기 위해 마우스 포인트클릭 시간 값 확인
+
+            //이벤트 발생시 시간을 알고 싶을때.
+            // var time = new Date();
+            // var timestr = time.getMilliseconds();
+            // info.innerHTML = (timestr) 시간정보를 넣을때.;
+
+
+            //이벤트 핸들러에 따라 info 테이블에 좌표값을 입력
+            info.innerHTML ="("+event.clientX+","+event.clientY+")";
+
+            //만약 특수키도 같이 눌렀다면 아래 로직 작동.
+            if(event.altKey){
+                document.getElementById('elmaltkey').innerHTML = "("+event.clientX+","+event.clientY+")";
+            }
+            if(event.ctrlKey){
+                document.getElementById('elmctrlkey').innerHTML = "("+event.clientX+","+event.clientY+")";
+              // ctrl클릭하는 횟수가 증가함에 따라 새로운 테이블에 좌표를 생성
+              if(count==0)
+              {count++;
+                document.getElementById('mousecount1').innerHTML = "("+event.clientX+","+event.clientY+")";
+                document.getElementById("point1").style.left = event.clientX+"px";
+                document.getElementById("point1").style.top = event.clientY+"px";
+                add_item();
+                show_uuid();
+
+                //새로 생성될 ID 값을 조회해서 선택할 수 있어야 한다
+                // 포인트 생성과 동시에 위치조정.
+                document.getElementById("div1").style.left = event.clientX+"px";
+                document.getElementById("div1").style.top = event.clientY+"px";
+              }
+               else if(count==1)
+              {count++;
+                document.getElementById('mousecount2').innerHTML = "("+event.clientX+","+event.clientY+")";
+                document.getElementById("point2").style.left = event.clientX+"px";
+                document.getElementById("point2").style.top = event.clientY+"px";
+                add_item();
+                show_uuid();
+
+              }
+              else if(count==2)
+              {count++;
+                document.getElementById('mousecount3').innerHTML = "("+event.clientX+","+event.clientY+")";
+                document.getElementById("point3").style.left = event.clientX+"px";
+                document.getElementById("point3").style.top = event.clientY+"px";
+                add_item();
+                show_uuid();
+
+              }
+              else if(count==3){
+                count=0;
+                document.getElementById("point4").style.left = event.clientX+"px";
+                document.getElementById("point4").style.top = event.clientY+"px";
+                add_item();
+                show_uuid();
+
+              }
+
+            }
+            if(event.shiftKey){
+                document.getElementById('elmshiftKey').innerHTML = "("+event.clientX+","+event.clientY+")";
+            }
+            document.getElementById('elemclientx').innerHTML = event.clientX;
+            document.getElementById('elemclienty').innerHTML = event.clientY;
+        }
+
+        //오브젝트별 필요한 이벤트 삽입.
+        //각 이벤트 활성화시 핸들러 호출.
+        t.addEventListener('click', handler);
+        t.addEventListener('dblclick', handler);
+        // t.addEventListener('mousedown', handler);
+        // t.addEventListener('mouseup', handler);
+        // t.addEventListener('mousemove', handler);
+        // t.addEventListener('mouseover', handler);
+        // t.addEventListener('mouseout', handler);
+        // t.addEventListener('contextmenu', handler);
+
+
+        // 포인트 생성 로직
+        function add_item(){
+          //빈 포인트를 만들기 위해 DIV생성.
+          // pre_set(포인트 기본세트를 불러와서 DIV에 넣
+          var div = document.createElement('div');
+          div.innerHTML = document.getElementById('pre_set').innerHTML;
+          //getElementById (추가할 위치 id입력)포인트 생성 후 어느 위치에 붙일것인지 값을 받아와야한다.
+          document.getElementById('point'+count.toString()).appendChild(div);
+          // document.getElementById('field').appendChild(div);
+        }
+
+        // 랜덤아이디 생성
+        function remove_item(obj){
+          // obj.parentNode 를 이용하여 삭제
+          // getElementById(지워야하는 포인트 div)를 입력해야함.
+          document.getElementById('point'+count.toString()).removeChild(obj.parentNode);
+          // document.getElementById('field').removeChild(obj.parentNode);
+          }
+
+          function guid() {
+            function s4() {
+              return ((1 + Math.random()) * 0x10000 | 0).toString(16).substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+          }
+
+          function show_uuid() {
+            document.getElementById('uuid').innerHTML = guid();
+            document.getElementById('uuid1').value = guid();
+          }
+
+          //랜덤아이디 생성
+
+          //
+          function createPoint(){
+            var page = document.getElementById("sample_page");
+            // 2-1. 기준이 되는 위치찾기.
+            var content = document.getElementById("content");
+            // 2-2. <div> Element를 동적으로 생성.
+            var div1 = document.createElement("div");
+            // 2-3. div의 내부 자식노드를  동적으로생성하기.
+            var text2_1	= document.createTextNode("생성할 Node의 양이 많은 경우 ");
+            var span = document.createElement("span");
+            var spanText =  document.createTextNode("어떤 방법을 ");
+            span.appendChild(spanText);
+            var text2_2	= document.createTextNode("사용해야 할까요?");
+
+            // 2-4. div의 자식노드로 컨텐츠들을 추가
+            div1.appendChild(text2_1);
+            div1.appendChild(span);
+            div1.appendChild(text2_2);
+            div1.style.border = "4px solid #ff0000";
+
+            //2-5.생성된 div1을 #content의 위쪽에 추가
+            page.insertBefore(div1,content);
+          }
+
+        </script>
+
+    </body>
+</html>
